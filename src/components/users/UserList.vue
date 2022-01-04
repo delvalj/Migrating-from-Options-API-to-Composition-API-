@@ -16,6 +16,7 @@
       ></user-item>
     </ul>
   </base-container>
+
 </template>
 
 <script>
@@ -54,7 +55,6 @@ export default {
       }, 300);
 
     });
-
 
     function updateSearch(val) {
       enteredSearchTerm.value = val;
@@ -146,6 +146,7 @@ export default {
 //     }, 300);
 //   }
 // }
+
 }
 ;
 </script>
