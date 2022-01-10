@@ -21,8 +21,9 @@
 
 <script>
 import UserItem from './UserItem.vue';
+import { ref, computed } from 'vue';
 
-import { ref, computed, watch } from 'vue';
+import useSearch from '@/hooks/search.js';
 
 export default {
   components: {
@@ -32,41 +33,47 @@ export default {
   emits: ['list-projects'],
 
   setup(props) {
-    const enteredSearchTerm = ref('');
-    const activeSearchTerm = ref('');
 
-    const availableUsers = computed(function() {
-      let users = [];
-      if (activeSearchTerm.value) {
-        users = props.users.filter((usr) =>
-          usr.fullName.includes(activeSearchTerm.value)
-        );
-      } else if (props.users) {
-        users = props.users;
-      }
-      return users;
-    });
+    const { enteredSearchTerm, availableItems, updateSearch } = useSearch(props.users, 'fullName');
 
-    watch(enteredSearchTerm, function(newValue) {
-      setTimeout(() => {
-        if (newValue === enteredSearchTerm.value) {
-          activeSearchTerm.value = newValue;
-        }
-      }, 300);
+    // COMPOSITION API
+    // REEMPLAZO ESTO CON UN HOOK PARA EVITAR TENER C0DIG0 DUPLICADO.
 
-    });
-
-    function updateSearch(val) {
-      enteredSearchTerm.value = val;
-    }
+    // const enteredSearchTerm = ref('');
+    // const activeSearchTerm = ref('');
+    //
+    // const availableUsers = computed(function() {
+    //   let users = [];
+    //   if (activeSearchTerm.value) {
+    //     users = props.users.filter((usr) =>
+    //       usr.fullName.includes(activeSearchTerm.value)
+    //     );
+    //   } else if (props.users) {
+    //     users = props.users;
+    //   }
+    //   return users;
+    // });
+    //
+    // watch(enteredSearchTerm, function(newValue) {
+    //   setTimeout(() => {
+    //     if (newValue === enteredSearchTerm.value) {
+    //       activeSearchTerm.value = newValue;
+    //     }
+    //   }, 300);
+    //
+    // });
+    //
+    // function updateSearch(val) {
+    //   enteredSearchTerm.value = val;
+    // }
 
     const sorting = ref(null);
 
     const displayedUsers = computed(function() {
       if (!sorting.value) {
-        return availableUsers.value;
+        return availableItems.value;
       }
-      return availableUsers.value.slice().sort((u1, u2) => {
+      return availableItems.value.slice().sort((u1, u2) => {
         if (sorting.value === 'asc' && u1.fullName > u2.fullName) {
           return 1;
         } else if (sorting.value === 'asc') {
@@ -85,13 +92,13 @@ export default {
     }
 
     return {
-      enteredSearchTerm, activeSearchTerm, sorting, availableUsers, displayedUsers,
-      updateSearch, sort
+      enteredSearchTerm, sorting, displayedUsers,
+      updateSearch, sort, availableItems
     };
 
   }
 
-
+// OPTION API
 // data() {
 //   // return {
 //   //   enteredSearchTerm: '',
